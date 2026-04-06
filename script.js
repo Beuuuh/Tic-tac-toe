@@ -8,16 +8,16 @@ const gameBoard = (() => {
             DIVBOARD.appendChild(div);
             div.addEventListener("click", () => {
                 markTheBoard(div);
-            });
-        };
-    };
+            })
+        }
+    }
 
     const markTheBoard = (div) => {
         div.innerText = "X";
-    }; 
+    }
 
     return {
         createBoard,
         markTheBoard
-    };
-})();
+    }
+})()
