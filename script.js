@@ -8,28 +8,27 @@ const gameBoard = (() => {
     let computerScore = 0;
     let gameState = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
     let possibleMoves = [];
+    let pixels = [];
     
     const createBoard = () => {
         for(let i = 0; i < 9; i++) {
             let div = document.createElement("div");
             div.setAttribute("class", "pixel");
             div.setAttribute("id", `${i + 1}`);
-
-            div.style.width = "200px";
-            div.style.height = "200px";
-            div.style.backgroundColor = "cyan";
-            div.style.border = "1px solid black";
-            div.style.borderColor = "black";
-
+            pixels.push(div);
             divBoard.appendChild(div);
 
             div.addEventListener("click", () => {
-                markTheBoard(div);
-                addToArray(i + 1);
-                showTurn(playerTurn ? "Player" : "Computer");
-                playerTurn = !playerTurn;
-                evaluateGameState();
-                computerTurn();
+                if(div.innerText == "X" || div.innerText == "O") {
+                    alert("You have already marked this square");
+                } else {
+                    markTheBoard(div);
+                    addToArray(i + 1);
+                    showTurn(playerTurn ? "Player" : "Computer");
+                    playerTurn = !playerTurn;
+                    evaluateGameState();
+                    computerTurn();
+                }
             })
         }
     }
@@ -62,11 +61,12 @@ const gameBoard = (() => {
     }
 
     const computerTurn = () => {
-        let max = possibleMoves.length - 1
+        let max = possibleMoves.length - 1;
         let index = Math.floor(Math.random() * max);
         let {i, j} = possibleMoves[index];
         
         gameState[i][j] = 1;
+        changesPixel(i++, j++);
     }
 
     const evaluateGameState = () => {
@@ -79,6 +79,13 @@ const gameBoard = (() => {
                 }
             }
         }
+    }
+
+    const changesPixel = (i, j) => {
+        let index = (i * 3) + j;
+        let pixel = pixels[index];
+
+        pixel.innerText = "O";
     }
 
     return {
