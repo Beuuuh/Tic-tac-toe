@@ -9,6 +9,9 @@ const gameBoard = (() => {
     let gameState = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
     let possibleMoves = [];
     let pixels = [];
+
+    let countPlayer = 0;
+    let countComputer = 0;
     
     const createBoard = () => {
         for(let i = 0; i < 9; i++) {
@@ -26,10 +29,62 @@ const gameBoard = (() => {
                     addToArray(i + 1);
                     showTurn(playerTurn ? "Player" : "Computer");
                     playerTurn = !playerTurn;
+                    console.log(gameState);
+                    checksForWinner();
                     evaluateGameState();
                     computerTurn();
                 }
             })
+        }
+    }
+
+    const checksForWinner = () => {
+        verifyMainDiagonal();
+        verifySecondaryDiagonal();
+
+        if(countComputer == 3 || countPlayer == 3) {
+            alert(`${(countComputer == 3) ? "Computer" : "Player"}`);
+        } else {
+            countComputer = 0;
+            countPlayer = 0;
+        }
+    }
+
+    const verifyMainDiagonal = () => {
+        let p = 0;
+        let c = 0;
+
+        for(let i = 0; i <= gameState.length - 1; i++) {
+            if(gameState[i][i] == 1) {
+                countPlayer++;
+            } else if(gameState[i][i] == 2){
+                countComputer++;
+            }
+        }
+
+        if(p == 3) {
+            countPlayer = 3;
+        } else if(c == 3) {
+            countComputer = 3;
+        }
+    }
+
+    const verifySecondaryDiagonal = () => {
+        let p = 0;
+        let c = 0;
+
+        for(let i = 0; i <= gameState.length - 1; i++) {
+            if(gameState[i][gameState.length - 1 - i] == 1) {
+                countPlayer++;
+            } else if(gameState[i][gameState.length - 1 - i] == 2) {
+                countComputer++;
+            }
+        }
+
+        if(p == 3) {
+            countPlayer = 3;
+        } else if(c == 3) {
+            countComputer = 3;
         }
     }
 
@@ -65,7 +120,7 @@ const gameBoard = (() => {
         let index = Math.floor(Math.random() * max);
         let {i, j} = possibleMoves[index];
         
-        gameState[i][j] = 1;
+        gameState[i][j] = 2;
         changesPixel(i++, j++);
     }
 
