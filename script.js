@@ -47,8 +47,7 @@ const gameBoard = (() => {
         if(countComputer == 3 || countPlayer == 3) {
             alert(`${(countComputer == 3) ? "Computer" : "Player"}`);
         } else {
-            countComputer = 0;
-            countPlayer = 0;
+            p = c = 0;
         }
     }
 
@@ -102,9 +101,16 @@ const gameBoard = (() => {
                     c++;
                 }
             }
+
+            if(p == 3 || c == 3) {
+                break;
+            } else {
+                p = c = 0;
+            }
         }
 
         if(p == 3) {
+            console.log("deu certo");
             countPlayer = 3;
         } else if(c == 3) {
             countComputer = 3;
@@ -155,6 +161,7 @@ const gameBoard = (() => {
         
         gameState[i][j] = 2;
         changesPixel(i++, j++);
+        checksForWinner();
     }
 
     const evaluateGameState = () => {
