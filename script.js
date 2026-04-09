@@ -47,7 +47,7 @@ const gameBoard = (() => {
         if(countComputer == 3 || countPlayer == 3) {
             alert(`${(countComputer == 3) ? "Computer" : "Player"}`);
         } else {
-            p = c = 0;
+            countComputer = countPlayer = 0;
         }
     }
 
