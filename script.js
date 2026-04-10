@@ -7,9 +7,10 @@ const display = (() => {
 
     reset.addEventListener("click", () => {
         gameBoard.reset();
-        pixels.map((div) => {
-            div.innerText = "";
-        })
+        divBoard.innerHTML = "";
+        pixels = [];
+        display.createBoard();
+        display.showTurn("Player");
     })
 
     const showScore = (playerScore, computerScore) => {
@@ -33,9 +34,13 @@ const display = (() => {
         turn.innerText = `It's ${somebodyTurn}'s turn`;
     }
 
-    const showWinner = (countComputer, countPlayer) => {
-        if(countComputer == 3 || countPlayer == 3) {
-            alert(`${(countComputer == 3) ? "Computer" : "Player"}`);
+    const showWinner = (winner) => {
+        alert(`${winner} wins!`);
+    }
+
+    const blockBoard = () => {
+        for(let i = 0; i < pixels.length; i++) {
+            pixels[i].style.pointerEvents = "none";
         }
     }
 
@@ -63,6 +68,7 @@ const display = (() => {
         markTheBoard,
         changesPixel,
         showTurn,
+        blockBoard,
         createBoard,
         showWinner
     }
@@ -76,15 +82,23 @@ const gameBoard = (() => {
     let possibleMoves = [];
     let countPlayer = 0;
     let countComputer = 0;
+    let gameOver = false;
 
     const checksForWinner = () => {
+        countComputer = countPlayer = 0;
+
         verifyMainDiagonal();
         verifySecondaryDiagonal();
         verifyRows();
         verifyColumns();
 
-        display.showWinner(countComputer, countPlayer);
-        countComputer = countPlayer = 0;
+        if(countPlayer == 3) {
+            return "Player";
+        } else if(countComputer == 3) {
+            return "Computer";
+        } else {
+            return null;
+        }
     }
 
     const verifyMainDiagonal = () => {
@@ -183,7 +197,26 @@ const gameBoard = (() => {
         
         gameState[i][j] = 2;
         display.changesPixel(i, j);
-        checksForWinner();
+        
+        let result = checksForWinner();
+
+        if(result == "Computer") {
+            computerScore++;
+            gameOver = true;
+            display.showScore(playerScore, computerScore);
+            display.showWinner("Computer");
+            display.blockBoard();
+        } else {
+            evaluateGameState();
+
+            if(possibleMoves.length == 0) {
+                gameOver = true;
+                alert("Velha!");
+                display.blockBoard();
+            } else {
+                display.showTurn("Player");
+            }
+        }
     }
 
     const evaluateGameState = () => {
@@ -203,17 +236,35 @@ const gameBoard = (() => {
         possibleMoves = [];
         countComputer = 0;
         countPlayer = 0;
+        gameOver = false;
     }
     
     const evaluate = (i) => {
+        if(gameOver) {
+            return;
+        }
+
         addToArray(i + 1);
-        checksForWinner();
-        evaluateGameState();
-        
-        if (countPlayer !== 3 && possibleMoves.length > 0) {
-            computerTurn();
-        } else if (possibleMoves.length === 0 && countPlayer !== 3) {
-            alert("Velha!");
+
+        let result = checksForWinner();
+
+        if(result == "Player") {
+            playerScore++;
+            gameOver = true;
+            display.showScore(playerScore, computerScore);
+            display.showWinner("Player");
+            display.blockBoard();
+        } else {
+            evaluateGameState();
+
+            if(possibleMoves.length == 0) {
+                gameOver = true;
+                alert("Velha!");
+                display.blockBoard();
+            } else {
+                display.showTurn("Computer");
+                computerTurn();
+            }
         }
     }
 
