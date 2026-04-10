@@ -10,6 +10,7 @@ const display = (() => {
 
     const markTheBoard = (div) => {
         div.innerText = "X";
+        div.style.color = "#31c4be";
     }
 
     const changesPixel = (i, j) => {
@@ -17,6 +18,7 @@ const display = (() => {
         let pixel = pixels[index];
 
         pixel.innerText = "O";
+        pixel.style.color = "#f2b137";
     }
 
     const showTurn = (somebodyTurn) => {
