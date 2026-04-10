@@ -2,7 +2,15 @@ const display = (() => {
     const divBoard = document.querySelector(".gameboard");
     const label = document.querySelector(".label");
     const turn = document.querySelector(".turn");
+    const reset = document.querySelector(".resetBtn");
     let pixels = [];
+
+    reset.addEventListener("click", () => {
+        gameBoard.reset();
+        pixels.map((div) => {
+            div.innerText = "";
+        })
+    })
 
     const showScore = (playerScore, computerScore) => {
         label.innerText = `Player: ${playerScore} vs Computer: ${computerScore}`;
@@ -190,6 +198,13 @@ const gameBoard = (() => {
         }
     }
 
+    const reset = () => {
+        gameState = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        possibleMoves = [];
+        countComputer = 0;
+        countPlayer = 0;
+    }
+    
     const evaluate = (i) => {
         addToArray(i + 1);
         checksForWinner();
@@ -204,6 +219,7 @@ const gameBoard = (() => {
 
     return {
         evaluate,
+        reset,
         startGame
     }
 })()
