@@ -1,18 +1,34 @@
-const gameBoard = (() => {
+const display = (() => {
     const divBoard = document.querySelector(".gameboard");
     const label = document.querySelector(".label");
     const turn = document.querySelector(".turn");
-
-    let playerTurn = true;
-    let playerScore = 0;
-    let computerScore = 0;
-    let gameState = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    let possibleMoves = [];
     let pixels = [];
 
-    let countPlayer = 0;
-    let countComputer = 0;
-    
+    const showScore = (playerScore, computerScore) => {
+        label.innerText = `Player: ${playerScore} vs Computer: ${computerScore}`;
+    }
+
+    const markTheBoard = (div) => {
+        div.innerText = "X";
+    }
+
+    const changesPixel = (i, j) => {
+        let index = (i * 3) + j;
+        let pixel = pixels[index];
+
+        pixel.innerText = "O";
+    }
+
+    const showTurn = (somebodyTurn) => {
+        turn.innerText = `It's ${somebodyTurn}'s turn`;
+    }
+
+    const showWinner = (countComputer, countPlayer) => {
+        if(countComputer == 3 || countPlayer == 3) {
+            alert(`${(countComputer == 3) ? "Computer" : "Player"}`);
+        }
+    }
+
     const createBoard = () => {
         for(let i = 0; i < 9; i++) {
             let div = document.createElement("div");
@@ -26,17 +42,30 @@ const gameBoard = (() => {
                     alert("You have already marked this square");
                 } else {
                     markTheBoard(div);
-                    addToArray(i + 1);
-                    showTurn(playerTurn ? "Player" : "Computer");
-                    playerTurn = !playerTurn;
-                    console.log(gameState);
-                    checksForWinner();
-                    evaluateGameState();
-                    computerTurn();
+                    gameBoard.evaluate(i);
                 }
             })
         }
     }
+
+    return {
+        showScore,
+        markTheBoard,
+        changesPixel,
+        showTurn,
+        createBoard,
+        showWinner
+    }
+})()
+
+const gameBoard = (() => {
+    let playerTurn = true;
+    let playerScore = 0;
+    let computerScore = 0;
+    let gameState = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    let possibleMoves = [];
+    let countPlayer = 0;
+    let countComputer = 0;
 
     const checksForWinner = () => {
         verifyMainDiagonal();
@@ -44,11 +73,8 @@ const gameBoard = (() => {
         verifyRows();
         verifyColumns();
 
-        if(countComputer == 3 || countPlayer == 3) {
-            alert(`${(countComputer == 3) ? "Computer" : "Player"}`);
-        } else {
-            countComputer = countPlayer = 0;
-        }
+        display.showWinner(countComputer, countPlayer);
+        countComputer = countPlayer = 0;
     }
 
     const verifyMainDiagonal = () => {
@@ -110,7 +136,6 @@ const gameBoard = (() => {
         }
 
         if(p == 3) {
-            console.log("deu certo");
             countPlayer = 3;
         } else if(c == 3) {
             countComputer = 3;
@@ -135,32 +160,19 @@ const gameBoard = (() => {
         gameState[row][col] = 1;
     }
 
-    const markTheBoard = (div) => {
-        div.innerText = "X";
-    }
-
     const startGame = () => {
-        showScore(playerScore, computerScore);
-        createBoard();
-        showTurn("Player");
+        display.showScore(playerScore, computerScore);
+        display.createBoard();
+        display.showTurn("Player");
         playerTurn = !playerTurn;
     }
 
-    const showScore = (playerScore, computerScore) => {
-        label.innerText = `Player: ${playerScore} vs Computer: ${computerScore}`;
-    }
-
-    const showTurn = (somebodyTurn) => {
-        turn.innerText = `It's ${somebodyTurn}'s turn`;
-    }
-
     const computerTurn = () => {
-        let max = possibleMoves.length - 1;
-        let index = Math.floor(Math.random() * max);
+        let index = Math.floor(Math.random() * possibleMoves.length);
         let {i, j} = possibleMoves[index];
         
         gameState[i][j] = 2;
-        changesPixel(i++, j++);
+        display.changesPixel(i, j);
         checksForWinner();
     }
 
@@ -176,14 +188,20 @@ const gameBoard = (() => {
         }
     }
 
-    const changesPixel = (i, j) => {
-        let index = (i * 3) + j;
-        let pixel = pixels[index];
-
-        pixel.innerText = "O";
+    const evaluate = (i) => {
+        addToArray(i + 1);
+        checksForWinner();
+        evaluateGameState();
+        
+        if (countPlayer !== 3 && possibleMoves.length > 0) {
+            computerTurn();
+        } else if (possibleMoves.length === 0 && countPlayer !== 3) {
+            alert("Velha!");
+        }
     }
 
     return {
+        evaluate,
         startGame
     }
 })()
